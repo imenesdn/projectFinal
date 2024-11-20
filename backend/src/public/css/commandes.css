@@ -1,0 +1,68 @@
+.commandes {
+  min-height: 90vh;
+  width: 70vw;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.commandes h1 {
+  font-size: 3rem;
+  margin: 1rem 0rem 2rem 0rem;
+  height: 6%;
+}
+
+.conteneurCommandes {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 50%;
+}
+
+.listCommandes {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-around;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.listCommandes li {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  max-width: 100%;
+  grid-gap: 1rem;
+  align-items: center;
+}
+
+.grid-item {
+  margin: 10px;
+  align-items: center;
+  margin-right: auto;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.listCommandes h2 {
+  font-size: 1.2rem;
+}
+
+.selectEtatCommande {
+  width: 50%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.conteneurCommandes::-webkit-scrollbar {
+  width: 12px;
+}
+
+.conteneurCommandes::-webkit-scrollbar-thumb {
+  background-color: #fbb731;
+  border-radius: 6px;
+}
+
+.conteneurCommandes::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}

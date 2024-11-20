@@ -1,0 +1,223 @@
+<script setup>
+import { computed, onMounted, ref } from "vue";
+import { useProductStore } from "../stores/product";
+import { useAuthStore } from "../stores/auth";
+import { baseUrl } from "../services/axios";
+
+const productStore = useProductStore();
+const authStore = useAuthStore();
+
+const icons = ref(["mdi-linkedin", "mdi-email", "mdi-github", "mdi-facebook"]);
+
+const email = ref("");
+
+onMounted(async () => {
+  await productStore.getPaniers();
+});
+
+const updateQuantity = async (p_id, quantite) => {
+  try {
+    const res = await productStore.updateQuantity(p_id, quantite);
+    authStore.showSnack(res?.message);
+    await productStore.getPaniers();
+  } catch (err) {
+    authStore.showSnack(err?.data?.message);
+  }
+};
+
+const removeItem = async (p_id) => {
+  try {
+    const res = await productStore.removeItem(p_id);
+    authStore.showSnack(res?.message);
+    await productStore.getPaniers();
+  } catch (err) {
+    authStore.showSnack(err?.data?.message);
+  }
+};
+
+const reset = async () => {
+  try {
+    const res = await productStore.resetPanier();
+    authStore.showSnack(res?.message);
+    await productStore.getPaniers();
+  } catch (err) {
+    authStore.showSnack(err?.data?.message);
+  }
+};
+const place = async () => {
+  try {
+    const res = await productStore.place();
+    authStore.showSnack(res?.message);
+    await productStore.getPaniers();
+  } catch (err) {
+    authStore.showSnack(err?.data?.message);
+  }
+};
+
+const gTotal = computed(() =>
+  productStore.paniers.reduce((accumulator, current) => {
+    return accumulator + current.prixTotal;
+  }, 0),
+);
+</script>
+
+<template>
+  <div>
+    <v-container class="px-2 py-5">
+      <v-row>
+        <v-col cols="12">
+          <h2 class="pb-1 text-h4 font-weight-medium text-grey-darken-3">
+            Panier
+          </h2>
+          <hr class="shortLine" />
+        </v-col>
+      </v-row>
+      <v-row class="pa-0 ma-0">
+        <v-col cols="1 text-h6"> Produits </v-col>
+        <v-col cols="3 text-h6"> Nom </v-col>
+        <v-col cols="2 text-h6"> Prix </v-col>
+        <v-col cols="2 text-h6"> Quantite </v-col>
+        <v-col cols="2 text-h6"> Total </v-col>
+        <v-col cols="2 text-h6"> Action </v-col>
+      </v-row>
+
+      <v-row
+        v-for="(item, idx) in productStore.paniers"
+        :key="idx"
+        align="center"
+        class="ma-0 pa-0"
+        style="border-bottom: 1px solid #ebebeb"
+      >
+        <v-col cols="1">
+          <img
+            :src="`${baseUrl + item.produit.cheminImage}`"
+            class="rounded"
+            width="50"
+          />
+        </v-col>
+        <v-col cols="3">
+          {{ item.produit.nom }}
+        </v-col>
+        <v-col cols="2"> ${{ item.produit.prix }} </v-col>
+        <v-col class="d-flex items-center" cols="2" style="gap: 10px">
+          <v-btn
+            :disabled="item.quantite < 2"
+            class="text-white"
+            color="primary"
+            density="compact"
+            icon="mdi-minus"
+            style="color: white !important"
+            @click="updateQuantity(item.produit.produitId, item.quantite - 1)"
+          ></v-btn>
+          <div style="width: 30px">
+            <input
+              :value="item.quantite"
+              readonly="true"
+              style="
+                width: 30px;
+                height: 30px;
+                border: 1px solid grey;
+                text-align: center;
+              "
+              type="number"
+            />
+          </div>
+          <v-btn
+            class="text-white"
+            color="primary"
+            density="compact"
+            icon="mdi-plus"
+            style="color: white !important"
+            @click="updateQuantity(item.produit.produitId, item.quantite + 1)"
+          ></v-btn>
+        </v-col>
+        <v-col cols="2"> ${{ item.prixTotal }} </v-col>
+        <v-col cols="2">
+          <v-btn
+            class="text-white"
+            color="red"
+            density="compact"
+            icon="mdi-close"
+            style="color: white !important"
+            @click="removeItem(item.produit.produitId)"
+          ></v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row align="center" class="mt-8">
+        <v-col cols="8">
+          <v-text-field
+            v-model="email"
+            label="Enter votre addresse"
+            rounded
+            style="width: 80%"
+            variant="outlined"
+          >
+            <template v-slot:append-inner>
+              <v-btn color="primary"> Submit</v-btn>
+            </template>
+          </v-text-field>
+        </v-col>
+        <v-col cols="4">
+          <div class="text-right">
+            <v-btn
+              :disabled="productStore.paniers.length < 1"
+              color="primary"
+              round
+              @click="reset"
+              >EFFACER PANIER
+            </v-btn>
+          </div>
+          <v-divider class="my-3" color="primary"></v-divider>
+          <div>
+            <div class="d-flex item-center justify-space-between mb-2">
+              <div>Addition</div>
+              <div class="font-weight-bold">${{ gTotal }}</div>
+            </div>
+            <div class="d-flex item-center justify-space-between mb-2">
+              <div>Livraison</div>
+              <div class="font-weight-bold">$0</div>
+            </div>
+            <div class="d-flex item-center justify-space-between mb-2">
+              <div>Addition</div>
+              <div class="font-weight-bold">${{ gTotal }}</div>
+            </div>
+            <div class="text-right">
+              <v-btn
+                :disabled="productStore.paniers.length < 1"
+                color="primary"
+                size="small"
+                @click="place"
+                >Payez
+              </v-btn>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
+</template>
+
+<style scoped>
+.shortLine {
+  width: 80px;
+  border: 1px solid #444;
+  margin-left: 0px;
+}
+
+.Card:hover {
+  transform: scale(1.01);
+  transition: transform 0.2s ease-in-out;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  /* Firefox */
+}
+</style>

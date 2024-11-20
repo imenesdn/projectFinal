@@ -1,0 +1,14 @@
+.text-center {
+  height: 90vh;
+  width: 20%;
+  margin: 5vh auto;
+}
+
+.sr-only {
+  font-size: 1.2rem;
+}
+
+.btn-primary {
+  background-color: #fbb731;
+  color: black;
+}

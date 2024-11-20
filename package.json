@@ -1,0 +1,17 @@
+{
+    "name": "BurgerPlace",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+        "frontend",
+        "backend"
+    ],
+    "scripts": {
+        "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm start\" --names frontend,backend",
+        "start": "node backend/server.js",
+        "build": "npm --prefix frontend run build"
+    },
+    "dependencies": {
+        "concurrently": "^8.2.2"
+    }
+}
